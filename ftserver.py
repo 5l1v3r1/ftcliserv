@@ -5,8 +5,12 @@
 import os,os.path,sys,socket
 from socket import error as SocketError
 if len(sys.argv) < 2:
-    sys.stderr.write('Usage: python ftserver.py 1234\n')
+    sys.stderr.write('Usage: python ftserver.py [--skip] 1234\n')
     sys.exit(1)
+skip = False
+if '--skip' in sys.argv:
+    skip = True
+    sys.argv.remove('--skip')
 c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 c.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 c.bind(('0.0.0.0', int(sys.argv[1])))
@@ -25,6 +29,7 @@ try:
             n = 'loot/' + n
             if '..' in n:
                 print '[!]', 'Ignoring filename', n
+                s.close()
                 continue
             if '/' in n:
                 dir = os.path.dirname(n)
@@ -36,6 +41,11 @@ try:
             if os.path.exists(n):
                 if os.path.isdir(n):
                     print '[!]', 'Destination file is directory, ignoring...'
+                    s.close()
+                    continue
+                elif skip:
+                    print '[ ]', 'File exists, skipping...'
+                    s.close()
                     continue
                 else:
                     print '[ ]', 'Overwriting file', n

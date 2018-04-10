@@ -6,19 +6,22 @@
 import sys,socket
 if len(sys.argv)>3:
     for i in sys.argv[3:]:
-        s=socket.socket()
-        s.connect((sys.argv[1],int(sys.argv[2]),))
-        print 'uploading',i,'...',
-        c=s.recv(1024)
-        if c=='h':
-            s.sendall(i)
-        c=s.recv(1024)
-        if c=='b':
-            with open(i,'rb') as f:
-                while True:
-                    x=f.read(1024)
-                    if x:
-                        s.send(x)
-                    else:
-                        break
-            print 'done'
+        try:
+            s=socket.socket()
+            s.connect((sys.argv[1],int(sys.argv[2]),))
+            print 'uploading',i,'...',
+            c=s.recv(1024)
+            if c=='h':
+                s.sendall(i)
+            c=s.recv(1024)
+            if c=='b':
+                with open(i,'rb') as f:
+                    while True:
+                        x=f.read(1024)
+                        if x:
+                            s.send(x)
+                        else:
+                            break
+                print 'done'
+        except:
+            pass
